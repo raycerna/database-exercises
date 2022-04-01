@@ -100,20 +100,20 @@ ORDER by hire_date ASC, birth_date DESC;
 #Use concat() to combine their first and last name together as a single column named full_name.
 
 
-SELECT CONCAT(first_name,last_name) AS full_name
+SELECT CONCAT(first_name,' ',last_name) AS full_name
 FROM employees
 WHERE last_name LIKE 'E%E';
 
 #3 Convert the names produced in your last query to all uppercase.
 
-SELECT UPPER(CONCAT(first_name,last_name)) AS full_name
+SELECT UPPER(CONCAT(first_name,' ',last_name)) AS full_name
 FROM employees
 WHERE last_name LIKE 'E%E';
 
 #4 Find all employees hired in the 90s and born on Christmas. 
 #Use datediff() function to find how many days they have been working at the company (Hint: You will also need to use NOW() or CURDATE()),
 
-SELECT DATEDIFF(current_date(),hire_date) AS datediff, first_name, last_name, hire_date, birth_date
+SELECT DATEDIFF(current_date(),hire_date) AS day_w_company, first_name, last_name, hire_date, birth_date
 FROM employees
 WHERE hire_date LIKE '199%'
 AND birth_date LIKE '%-12-25';
@@ -123,13 +123,17 @@ AND birth_date LIKE '%-12-25';
 SELECT min(salary) AS smallest, max(salary) AS largest
 FROM salaries;
 
+SELECT min(salary), max(salary)
+FROM salaries
+WHERE to_date > CURDATE();
+
 #6 Use your knowledge of built in SQL functions to generate a username for all of the employees. 
 #A username should be all lowercase, and consist of the first character of the employees first name, 
 #the first 4 characters of the employees last name, an underscore, the month the employee was born, 
 #and the last two digits of the year that they were born. Below is an example of what the first 10 rows will look like:
 #username(f_initial,l_firstfour,mm,last2year),first_name,last_name,birth_date
 
-SELECT concat(substr(first_name,1,1),substr(last_name,1,4),'_',substr(birth_date,6,2),substr(birth_date,3,2)) AS user_name,
+SELECT lower(concat(substr(first_name,1,1),substr(last_name,1,4),'_',substr(birth_date,6,2),substr(birth_date,3,2))) AS user_name,
 first_name,last_name, birth_date
 FROM employees;
 
