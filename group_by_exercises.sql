@@ -63,12 +63,16 @@ where instr(last_name,'q')>1 and not instr(last_name,'qu')>1
 group by last_name;
 #CHLEQ,LINDQVIST
 
+
+
 #6 Add a COUNT() to your results (the query above) to find the number of employees with the same last name.
 
 select count(last_name) as 'count', last_name
 from employees
 where instr(last_name,'q')>1 and not instr(last_name,'qu')>1
 group by last_name;
+
+select last_name, count(last_name;
 
 #7 Find all all employees with first names 'Irena', 'Vidya', or 'Maya'. 
 #Use COUNT(*) and GROUP BY to find the number of employees for each gender with those names.
@@ -87,6 +91,11 @@ or 'vidya'
 or 'maya')
 group by gender;
 
+select gender, first_name(gender)
+from employees
+where first_name IN('Irena','vidya','maya')
+group by gender, first_name;
+
 #8 Using your query that generates a username for all of the employees, generate a count employees for each unique username. 
 # Are there any duplicate usernames? BONUS: How many duplicate usernames are there?
 
@@ -97,11 +106,15 @@ GROUP BY user_name
 ORDER BY COUNT(*) DESC; 
 
 SELECT lower(concat(substr(first_name,1,1),substr(last_name,1,4),'_',substr(birth_date,6,2),substr(birth_date,3,2))) AS 'user_name', 
-count(*)
+count(*) as 'count_of_users'
 FROM employees
 GROUP BY user_name
 HAVING count(*)>=2;
 #yes, 13251 duplicates
+
+#9
+select concat('$',format(salary, 0)) as salary
+from salaries;
 
 
 
