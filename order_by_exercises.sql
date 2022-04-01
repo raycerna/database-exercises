@@ -11,6 +11,10 @@ ORDER BY first_name;
 #Irena Reutenauer
 #Vidya Simmen
 
+SELECT *
+FROM employees
+WHERE first_name IN ('Irena','Vidya','Maya';
+
 #3 Find all employees with first names 'Irena', 'Vidya', or 'Maya', and order your results returned by first name and then last name. 
 # In your comments, answer: What was the first and last name in the first row of the results? What was the first and last name of the last person in the table?
 SELECT *
@@ -48,6 +52,11 @@ ORDER BY emp_no;
 #10021 Ramzi Erde
 #499648 Tadahiro Erde
 
+SELECT *
+FROM employees
+WHERE last_name LIKE "E%E"
+ORDER BY emp_no;
+
 #6 Write a query to to find all employees whose last name starts and ends with 'E'. 
 # Sort the results by their hire date, so that the newest employees are listed first. 
 # Enter a comment with the number of employees returned, the name of the newest employee, and the name of the oldest employee.
@@ -70,12 +79,20 @@ AND birth_date LIKE '%-12-25'
 ORDER by hire_date DESC, birth_date ASC;
 #362
 #Khun Bernini
+
+SELECT *
+FROM employees
+WHERE hire_date LIKE '199%'
+AND birth_date LIKE '%-12-25'
+ORDER by birth_date, hire_date DESC;
+
 SELECT *
 FROM employees
 WHERE hire_date LIKE '199%'
 AND birth_date LIKE '%-12-25'
 ORDER by hire_date ASC, birth_date DESC;
 #Alselm Cappello
+
 
 
 
