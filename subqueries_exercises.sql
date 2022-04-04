@@ -62,6 +62,11 @@ from (select * from employees
 where emp_no like '101010') as table1
 join employees using (hire_date);
 
+select first_name, last_name, hire_date
+from employees
+where hire_date in (
+select hire_date from employees
+where emp_no = '101010');
 
 #2 Find all the titles ever held by all current employees with the first name Aamod.
 select * from employees
@@ -72,14 +77,6 @@ FROM titles AS t
 JOIN employees AS e ON (t.emp_no=e.emp_no)
 WHERE e.first_name='Aamod';
 
-SELECT COUNT(*),SUM(a.title_count) FROM
-(SELECT title,COUNT(*) as title_count
-FROM titles
-WHERE emp_no IN (
-SELECT emp_no
-FROM employees
-WHERE first_name='Aamod') 
-GROUP BY title)AS a;
 
 #3 How many people in the employees table are no longer working for the company? 
 #Give the answer in a comment in your code.
