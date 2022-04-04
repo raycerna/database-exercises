@@ -191,6 +191,40 @@ join departments as d on de.dept_no = d.dept_no
 join (select
 		dm.dept_no,
         concat(e.first_name, ' ', e.last_name) as managers;
+        
+SELECT CONCAT(e.first_name, ' ', e.last_name)   AS 'Employee',
+       d.dept_name AS 'Department Name',
+       CONCAT(e2.first_name, ' ', e2.last_name) AS 'Manager'
+FROM employees AS e
+         JOIN dept_emp de ON e.emp_no = de.emp_no
+         JOIN departments d ON de.dept_no = d.dept_no
+         JOIN dept_manager dm ON d.dept_no = dm.dept_no AND dm.to_date > CURDATE()
+         JOIN employees e2 ON e2.emp_no = dm.emp_no
+WHERE de.to_date > CURDATE()
+ORDER BY d.dept_name;
+
+#12 Bonus Who is the highest paid employee within each department.
+
+SELECT 
+    dept_name AS 'Department',
+    CONCAT(employees.first_name,
+            ' ',
+            employees.last_name) AS 'Highest Paid Employee'
+FROM
+    departments
+        JOIN
+    (SELECT 
+        dept_no, MAX(salary) AS max_salary
+    FROM
+        dept_emp
+    JOIN salaries USING (emp_no)
+    WHERE
+        dept_emp.to_date > NOW()
+    GROUP BY dept_no) AS a USING (dept_no)
+        JOIN
+    salaries ON a.max_salary = salaries.salary
+        JOIN
+    employees USING (emp_no);
 
 
 
