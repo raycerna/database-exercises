@@ -66,6 +66,15 @@ where hire_date in (
 select hire_date from employees
 where emp_no = '101010');
 
+select *
+from employees
+JOIN dept_emp using (emp_no)
+where to_date > now()
+and hire_date =
+	(select hire_date
+    from employees
+    where emp_no = 101010);
+
 #2 Find all the titles ever held by all current employees with the first name Aamod.
 select * from employees
 where first_name like 'Aamod';
@@ -74,6 +83,15 @@ SELECT e.first_name,t.title
 FROM titles AS t
 JOIN employees AS e ON (t.emp_no=e.emp_no)
 WHERE e.first_name='Aamod';
+
+select distinct title
+from titles
+where emp_no IN (
+	select emp_no
+    from employees
+    join dept_emp using (emp_no)
+    where first_name ='aamod'
+    and to_date > now());
 
 
 #3 How many people in the employees table are no longer working for the company? 
@@ -86,6 +104,13 @@ SELECT emp_no
 	FROM dept_emp
 	GROUP BY emp_no
 	HAVING max(to_date)<NOW());
+    
+select count(*) #count all the records
+from employees #from the employees table
+where emp_no not in
+	(select emp_no
+    from dept_emp
+    where to_date > now());
 
 #4 Find all the current department managers that are female. 
 #List their names in a comment in your code. 
@@ -103,6 +128,14 @@ WHERE to_date>NOW()) AND gender='F';
 #Leon, DasSarma, F
 #Hilary, Kambil, F
 
+select *
+from employees
+where emp_no in (
+	select emp_no
+		from dept_manager
+			where to_date > now()
+and gender="F";
+
 -- 5)Find all the employees that currently have a higher than average salary.
 
 SELECT e.first_name,e.last_name,s.salary, 'YES' as '> AVG_SALARY'
@@ -111,6 +144,13 @@ JOIN salaries AS s ON (e.emp_no=s.emp_no)
 WHERE s.salary>(
 SELECT AVG(salary)
 FROM salaries) AND s.to_date>NOW();
+
+
+select emp_no
+from salaries s
+join employees e using(emp_no)
+where to_date > now()
+and salary > (select avg(salary) from salaries);
 
 -- 6) How many current salaries are within 1 standard deviation of the highest salary? 
 -- (Hint you can use a built in function to calculate the standard deviation.) 
@@ -130,6 +170,36 @@ FROM salaries
 WHERE to_date>NOW() AND salary >(SELECT MAX(salary)-STDDEV(salary) FROM salaries);
 
 #78,.032%
+
+#what is the max salary?
+select max(salary) from salaries where to_date > now();
+
+#what is the 1std for current salary;
+select stddev(salary) from salaries where to_date > now();
+
+select count(*) 
+from salaries
+where to_date > now()
+and salary > (
+(select max(salary) from salaries where to_date > now()) - 
+(select stddev(salary) from salaries where to_date > now()));
+
+#what percent
+#count (numerator) / count of overall (denominator) *100
+
+select count(*) from salaries
+where to_date > now();
+
+select ((select count(*) 
+from salaries
+where to_date > now()
+and salary > (
+(select max(salary) from salaries where to_date > now())-
+(select std(salary) from salaries where to_date > now())
+)) / (select count(*) 
+from salaries
+where to_date > now())) * 100 as "percentage";
+
 
 -- BONUS
 -- 1. Find all the department names that currently have female managers.
