@@ -57,10 +57,8 @@ select *, (select avg(salary) from salaries where to_date > now())
 select * from employees
 where emp_no like '101010';
 
-select table1.first_name, table1.last_name, hire_date
-from (select * from employees
-where emp_no like '101010') as table1
-join employees using (hire_date);
+select hire_date from employees
+where emp_no = '101010';
 
 select first_name, last_name, hire_date
 from employees
@@ -157,7 +155,7 @@ FROM salaries) AND s.to_date>NOW();
 
 -- 3. Find the department name that the employee with the highest salary works in.
 
-SELECT d.dept_name as 'Depo w/ Highest $$$ Salary that you wish you worked in'
+SELECT d.dept_name as 'Depo w/ Highest $$$ that you wish you worked in'
 FROM employees AS e
 JOIN dept_emp AS de ON (e.emp_no=de.emp_no)
 JOIN departments AS d ON (d.dept_no=de.dept_no)
