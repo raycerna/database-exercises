@@ -14,6 +14,15 @@ select
     de.to_date > NOW() AS is_current_employee
 FROM dept_emp de;
 
+#instructor added order by function
+select
+	de.emp_no,
+    de.dept_no,
+    de.from_date AS start_date,
+    de.to_date AS end_date,
+    de.to_date > NOW() AS is_current_employee
+FROM dept_emp de
+order by emp_no;
 
 #2. Write a query that returns all employee names (previous and current), 
 ## and a new column 'alpha_group' that returns 'A-H', 'I-Q', or 'R-Z'
@@ -22,11 +31,21 @@ FROM dept_emp de;
 SELECT
     first_name,
     last_name,
+    CASE
+        WHEN LEFT(last_name, 1) <= 'H' THEN 'A-H'
+        WHEN LEFT(last_name, 1) <= 'Q' THEN 'I-Q'
+        ELSE 'R-Z'
+    END AS alpha_group
+FROM employees;
+
+SELECT
+    first_name,
+    last_name,
     LEFT(last_name, 1) AS first_letter_of_last_name,
     CASE
         WHEN LEFT(last_name, 1) <= 'H' THEN 'A-H'
         WHEN LEFT(last_name, 1) <= 'Q' THEN 'I-Q'
-        WHEN LEFT(last_name, 1) <= 'Z' THEN 'R-Z'
+        ELSE 'R-Z'
     END AS alpha_group
 FROM employees;
 
@@ -81,7 +100,7 @@ FROM employees;
 
 SELECT
     CONCAT(SUBSTR(birth_date, 1, 3), '0') as decade,
-    COUNT(*) as count
+    COUNT(*) as "# of Employees"
 FROM employees
 GROUP BY decade;
 
@@ -98,7 +117,7 @@ SELECT
         WHEN d.dept_name IN ('Finance', 'Human Resources') THEN 'Finanace & HR'
         ELSE d.dept_name
     END AS dept_group,
-    format(AVG(s.salary),2,0) AS avg_salary
+    format(AVG(s.salary),0) AS avg_salary
 FROM departments d
 JOIN dept_emp de USING (dept_no)
 JOIN salaries s USING (emp_no)
