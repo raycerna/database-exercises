@@ -29,7 +29,7 @@ describe employees;
 -- 		of the first name and last name columns
 
 ALTER TABLE jemison_1742.employees_with_departments 
-ADD full_name VARCHAR (30);
+ADD full_name VARCHAR (31);
 
 select *
 from jemison_1742.employees_with_departments;
@@ -58,6 +58,8 @@ from jemison_1742.employees_with_departments;
 
 select dept_name, full_name
 from jemison_1742.employees_with_departments;
+
+describe employees_with_departments;
 
 -- 2. Create a temporary table based on the payment table from the sakila database.
 -- 		Write the SQL necessary to transform the amount column such that it is stored as an integer 
@@ -88,6 +90,15 @@ select * from jemison_1742.payment_adj;
 -- 		historical average pay.
 -- 		In order to make the comparison easier, you should use the Z-score for salaries. 
 -- 		In terms of salary, what is the best department right now to work for? The worst?
+
+select avg(salary), std(salary) from employees.salaries; ##determine the average and stddev
+
+create temporary table jemison_1742.historic_aggregates as (
+select avg(salary) as avg_salary, std(salary) as std_salary
+from employees.salaries;
+
+-- Error Code: 1064. You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 3
+
 
 USE employees;
 show tables;
@@ -154,7 +165,7 @@ ORDER BY b.dept_name;
 ## 'Research', '-0.2426898454076678'
 ## 'Sales', '-1.4813652192876998'
 
-##best is Sales worst is Customer Service
+##best is Sales; worst is Customer Service
 
 USE employees;
 CREATE TEMPORARY TABLE jemison_1742.z_scores AS
