@@ -33,12 +33,35 @@ FROM employees;
 SELECT
     first_name,
     last_name,
-    LEFT(last_name, 1) AS first_letter_of_last_name,
+    substring(last_name, 1,1) AS first_letter_of_last_name,
     CASE
         WHEN substring(last_name, 1,1) <= 'H' THEN 'A-H'
         WHEN substring(last_name, 1,1) <= 'Q' THEN 'I-Q'
         WHEN substring(last_name, 1,1) <= 'Z' THEN 'R-Z'
+        ELSE "UKNOWN"
     END AS alpha_group
+FROM employees;
+
+SELECT
+    first_name,
+    last_name,
+    substring(last_name, 1,1) AS first_letter_of_last_name,
+    CASE
+        WHEN substring(last_name, 1,1) <= 'H' THEN 'A-H'
+        WHEN substring(last_name, 1,1) <= 'Q' THEN 'I-Q'
+        ELSE'R-Z'
+    END AS alpha_group
+FROM employees;
+
+
+-- example from other classmate:
+SELECT first_name, last_name, 
+	CASE  #first character of last name
+		WHEN LEFT(last_name,1) BETWEEN 'a' AND 'h' THEN 'A-H' #Inclusive, also finds uppercase in lowercase range
+        WHEN LEFT(last_name,1) BETWEEN 'i' AND 'q' THEN 'I-Q'
+        WHEN LEFT(last_name,1) BETWEEN 'r' AND 'z' THEN 'R-Z'
+        ELSE 'Other' #If first character not in english alphabet (accent, special character)
+	END AS alpha_group
 FROM employees;
 
 
