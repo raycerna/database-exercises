@@ -31,10 +31,16 @@ describe employees;
 ALTER TABLE jemison_1742.employees_with_departments 
 ADD full_name VARCHAR (30);
 
+select *
+from jemison_1742.employees_with_departments;
+
 -- b. Update the table so that full name column contains the correct data
 
 UPDATE jemison_1742.employees_with_departments
 SET full_name= CONCAT(first_name," ",last_name);
+
+select *
+from jemison_1742.employees_with_departments;
 
 -- c. Remove the first_name and last_name columns from the table.
 
@@ -42,9 +48,16 @@ ALTER TABLE jemison_1742.employees_with_departments
 DROP COLUMN first_name, 
 DROP COLUMN last_name;
 
+select *
+from jemison_1742.employees_with_departments;
+
+select dept_name, full_name
+from jemison_1742.employees_with_departments;
+
 -- d. What is another way you could have ended up with this same table?
 
-
+select dept_name, full_name
+from jemison_1742.employees_with_departments;
 
 -- 2. Create a temporary table based on the payment table from the sakila database.
 -- 		Write the SQL necessary to transform the amount column such that it is stored as an integer 
@@ -52,7 +65,7 @@ DROP COLUMN last_name;
 
 USE sakila;
 show tables;
-describe payment;
+
 CREATE TEMPORARY TABLE jemison_1742.payment_adj AS
 SELECT payment_id, customer_id,staff_id,rental_id,amount,payment_date,last_update
 FROM payment;
@@ -71,23 +84,33 @@ ALTER TABLE jemison_1742.payment_adj
 DROP COLUMN amount;
 select * from jemison_1742.payment_adj;
 
-
-
 -- 3. Find out how the current average pay in each department compares to the overall, 
 -- 		historical average pay.
 -- 		In order to make the comparison easier, you should use the Z-score for salaries. 
 -- 		In terms of salary, what is the best department right now to work for? The worst?
 
 USE employees;
+show tables;
+select salary
+from salaries
+where to_date > now()
+limit 10;
+
+-- 72012
+select avg(salary)
+from salaries
+where to_date > now()
+limit 10;
+
 SELECT b.dept_name,
 	AVG(b.salary_z_score)
-FROM(
-	SELECT d.dept_name,
-	((SELECT AVG(salary) FROM salaries)-a.average_salary)/
+FROM(SELECT d.dept_name,
+	((SELECT AVG(salary) FROM salaries)-a.average_salary)
+    /
     (SELECT STDDEV(salary) from salaries) AS salary_z_score
 FROM dept_emp AS de
-	JOIN departments AS d ON (de.dept_no=d.dept_no) AND de.to_date='9999-01-01'
-	JOIN salaries as s ON (de.emp_no=s.emp_no) AND s.to_date='9999-01-01'
+	JOIN departments AS d ON (de.dept_no=d.dept_no) AND de.to_date > now()
+	JOIN salaries as s ON (de.emp_no=s.emp_no) AND s.to_date > now()
 	JOIN (
 SELECT d.dept_name, 
 	AVG(s.salary) AS average_salary
@@ -95,7 +118,28 @@ SELECT d.dept_name,
 		JOIN dept_emp AS de ON (d.dept_no=de.dept_no)
 		JOIN employees AS e ON (de.emp_no=e.emp_no)
 		JOIN salaries AS s ON (e.emp_no=s.emp_no)
-		WHERE de.to_date='9999-01-01' AND s.to_date='9999-01-01'
+		WHERE de.to_date > now() AND s.to_date > now()
+GROUP BY d.dept_name) AS a ON (a.dept_name=d.dept_name)) AS b
+GROUP BY b.dept_name
+ORDER BY b.dept_name; 
+
+SELECT b.dept_name,
+	AVG(b.salary_z_score)
+FROM(SELECT d.dept_name,
+	((SELECT AVG(salary) FROM salaries)-a.average_salary)
+    /
+    (SELECT STDDEV(salary) from salaries) AS salary_z_score
+FROM dept_emp AS de
+	JOIN departments AS d ON (de.dept_no=d.dept_no) AND de.to_date > now()
+	JOIN salaries as s ON (de.emp_no=s.emp_no) AND s.to_date > now()
+	JOIN (
+SELECT d.dept_name, 
+	AVG(s.salary) AS average_salary
+	FROM departments as d
+		JOIN dept_emp AS de ON (d.dept_no=de.dept_no)
+		JOIN employees AS e ON (de.emp_no=e.emp_no)
+		JOIN salaries AS s ON (e.emp_no=s.emp_no)
+		WHERE de.to_date > now() AND s.to_date > now()
 GROUP BY d.dept_name) AS a ON (a.dept_name=d.dept_name)) AS b
 GROUP BY b.dept_name
 ORDER BY b.dept_name; 
@@ -110,13 +154,15 @@ ORDER BY b.dept_name;
 ## 'Research', '-0.2426898454076678'
 ## 'Sales', '-1.4813652192876998'
 
+##best is Sales worst is Customer Service
+
 USE employees;
 CREATE TEMPORARY TABLE jemison_1742.z_scores AS
 SELECT d.dept_name,
 ((SELECT AVG(salary) FROM salaries)-a.average_salary_dept)/(SELECT STDDEV(salary) FROM salaries) AS salary_z_score
 FROM dept_emp AS de
-JOIN departments AS d ON (de.dept_no=d.dept_no) -- AND de.to_date='9999-01-01'
-JOIN salaries as s ON (de.emp_no=s.emp_no) -- AND s.to_date='9999-01-01'
+JOIN departments AS d ON (de.dept_no=d.dept_no) -- AND de.to_date > now()
+JOIN salaries as s ON (de.emp_no=s.emp_no) -- AND s.to_date > now()
 JOIN (
 SELECT d.dept_name, 
 AVG(s.salary) AS average_salary_dept,
@@ -125,12 +171,16 @@ FROM departments as d
 JOIN dept_emp AS de ON (d.dept_no=de.dept_no)
 JOIN employees AS e ON (de.emp_no=e.emp_no)
 JOIN salaries AS s ON (e.emp_no=s.emp_no)
-WHERE de.to_date='9999-01-01' AND s.to_date='9999-01-01'
+WHERE de.to_date > now() AND s.to_date > now()
 GROUP BY d.dept_name) AS a ON (a.dept_name=d.dept_name);
 
-SELECT dept_name,AVG(salary_z_score)
-FROM z_scores
+SELECT dept_name -- AVG(salary_z_score)
+FROM jemison_1742.z_scores
 GROUP BY dept_name;
+
+select dept_name, AVG(salary_z_score)
+from jemison_1742.z_scores
+group by dept_name;
 
 
 
